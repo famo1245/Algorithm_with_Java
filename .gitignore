@@ -1,0 +1,10 @@
+### test ###
+/test
+
+### IntelliJ ###
+.idea
+*.iml
+*/out
+
+### Mac OS ###
+.DS_Store
