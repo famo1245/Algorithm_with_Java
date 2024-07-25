@@ -4,6 +4,7 @@ import java.io.*;
 public class BOJ1976V2 {
 
     private static int[] group;
+    private static int[] rank;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -12,10 +13,12 @@ public class BOJ1976V2 {
         // 도시의 수
         int N = Integer.parseInt(br.readLine());
         group = new int[N];
+        rank = new int[N];
 
         // union-find 사용을 위한 초기화
         for (int i = 0; i < N; i++) {
             group[i] = i;
+            rank[i] = 1;
         }
 
         // 여행 계획에 있는 도시의 수
@@ -62,9 +65,20 @@ public class BOJ1976V2 {
             b = find(b);
         }
 
+        if (a == b) {
+            return;
+        }
+
         // 서로 다른 그룹에 속해있는 경우 표시
-        if (a != b) {
-            group[b] = a;
+        if (rank[a] > rank[b]) {
+            int temp = b;
+            b = a;
+            a = temp;
+        }
+
+        group[a] = b;
+        if (rank[a] == rank[b]) {
+            rank[b]++;
         }
     }
 
