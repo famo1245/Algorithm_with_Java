@@ -1,3 +1,5 @@
+package unsolved;
+
 import java.util.*;
 import java.io.*;
 
@@ -52,5 +54,41 @@ public class BOJ1662 {
         }
 
         System.out.println(answer);
+
+//        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//
+//        String s = br.readLine();
+//        String[] input = s.split("");
+//
+//        ArrayDeque<String> q = new ArrayDeque<>();
+//        for (int i = 0; i < input.length; i++) {
+//            q.push(input[i]);
+//        }
+//
+//        int answer = 0;
+//        while (!q.isEmpty()) {
+//            String top = q.pop();
+//            if (top.equals("(")) {
+//                int k = Integer.parseInt(q.pop());
+//                answer *= k;
+//                q.push(Integer.toString(answer));
+//                q.push("+");
+//                answer = 0;
+//            } else if (top.equals("+")) {
+//                int next = Integer.parseInt(q.pop());
+//                answer += next;
+//            } else if (top.equals(")")) {
+//                q.addLast("+");
+//                q.addLast(Integer.toString(answer));
+//                answer = 0;
+//            } else {
+//                answer++;
+//            }
+//
+//            System.out.println(q);
+//            System.out.println("answer = " + answer);
+//        }
+//
+//        System.out.println(answer);
     }
 }
