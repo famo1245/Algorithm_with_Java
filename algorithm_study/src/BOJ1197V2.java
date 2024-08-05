@@ -1,11 +1,8 @@
 import java.io.*;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 
 public class BOJ1197V2 {
     public static void main(String[] args) throws IOException {
-        Instant start = Instant.now();
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         String[] temp = br.readLine().split(" ");
@@ -65,9 +62,6 @@ public class BOJ1197V2 {
         }
 
         System.out.println(minimumSpanningTree);
-        Instant end = Instant.now();
-        long diff = Duration.between(start, end).toMillis();
-        System.out.println("diff = " + diff + "ms");
 
 //        혹시나 배열로 선언했지만 메모리초과
 //        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
