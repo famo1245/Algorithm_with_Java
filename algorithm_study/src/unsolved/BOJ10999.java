@@ -6,7 +6,12 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class BOJ10999 {
+    static long[] lazy;
+    static long[] tree;
+    static int startIndex;
+
     public static void main(String[] args) throws IOException {
+        //TO => 기존 segment tree에 한계
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         StringBuilder sb = new StringBuilder();
@@ -17,11 +22,11 @@ public class BOJ10999 {
 
         // init segment tree
         int height = (int) Math.ceil(Math.log(N) / Math.log(2));
-        int startIndex = (int) Math.pow(2, height);
+        startIndex = (int) Math.pow(2, height);
         int treeSize = startIndex * 2;
 
-        long[] tree = new long[treeSize];
-        // TODO: lazy update 적용하기
+        tree = new long[treeSize];
+        lazy = new long[N];
 
         for (int i = 0; i < N; i++) {
             tree[i + startIndex] = Long.parseLong(br.readLine());
@@ -38,47 +43,50 @@ public class BOJ10999 {
             int command = Integer.parseInt(st.nextToken());
             if (command == 1) {
                 // 실제 N번째 데이터의 tree에서의 인덱스로 변환
-                int index = Integer.parseInt(st.nextToken()) - 1 + startIndex;
-                int endIndex = Integer.parseInt(st.nextToken()) - 1 + startIndex;
+                int index = Integer.parseInt(st.nextToken());
+                int endIndex = Integer.parseInt(st.nextToken());
                 long diff = Long.parseLong(st.nextToken());
 
-                // 누적합 변경
-                for (int j = index; j <= endIndex; j++) {
-                    update(tree, j, diff);
+                if (index == endIndex) {
+                    update(index - 1 + startIndex, diff);
+                } else {
+                    for(int j = startIndex - 1 ; j < endIndex; j++) {
+                        lazy[j] = diff;
+                    }
                 }
             } else {    // 2
                 // 시작과 끝 인덱스
                 int start = Integer.parseInt(st.nextToken()) - 1 + startIndex;
                 int end = Integer.parseInt(st.nextToken()) - 1 + startIndex;
-                sb.append(getRangeSum(tree, start, end)).append("\n");
+                sb.append(getRangeSum(start, end)).append("\n");
             }
         }
 
         System.out.println(sb);
     }
 
-    static void update(long[] segmentTree, int index, long value) {
+    static void update(int index, long value) {
         if (index == 0)
             return;
 
-        segmentTree[index] += value;
-        update(segmentTree, index / 2, value);
+        tree[index] += value;
+        update(index / 2, value);
     }
 
-    static long getRangeSum(long[] segmentTree, int startIndex, int endIndex) {
+    static long getRangeSum(int start, int end) {
         long result = 0;
-        if (startIndex > endIndex)
+        if (start > end)
             return result;
 
-        if (startIndex % 2 == 1) {
-            result += segmentTree[startIndex];
-            startIndex += 1;
+        if (start % 2 == 1) {
+            result += tree[start];
+            start += 1;
         }
-        if (endIndex % 2 == 0) {
-            result += segmentTree[endIndex];
-            endIndex -= 1;
+        if (end % 2 == 0) {
+            result += tree[end];
+            end -= 1;
         }
 
-        return result + getRangeSum(segmentTree, startIndex / 2 , endIndex / 2);
+        return result + getRangeSum(start / 2 , end / 2);
     }
 }
