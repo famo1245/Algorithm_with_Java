@@ -19,48 +19,24 @@ public class BOJ2118 {
         int answer = -1;
         int start = 0;
         int end = 1;
-        int route = 0;
-        route += distances[start] + distances[end];
-        while (start != end) {
-            int remain = sum - route;
+        int route = distances[start];
+        int remain = sum - route;
+        while (start < N) {
+            answer = Math.max(answer, Math.min(route, remain));
+            if (route == remain) {
+                break;
+            }
 
             if (route > remain) {
                 route -= distances[start];
-                start = (start + 1) % N;
-                System.out.println("bigger" + start + " " + end);
+                remain += distances[start];
+                start++;
                 continue;
             }
 
-            if (route > answer) {
-                answer = route;
-            }
-
+            remain -= distances[end];
+            route += distances[end];
             end = (end + 1) % N;
-            route += distances[end];
-            System.out.println(start + " " + end);
-        }
-
-        start = 0;
-        end = 1;
-        route = 0;
-        route += distances[start] + distances[end];
-        while (start != end) {
-            int remain = sum - route;
-
-            if (route > remain) {
-                start = (start - 1 + N) % N;
-                route -= distances[start];
-                System.out.println("bigger" + start + " " + end);
-                continue;
-            }
-
-            if (route > answer) {
-                answer = route;
-            }
-
-            end = (end - 1 + N) % N;
-            route += distances[end];
-            System.out.println(start + " " + end);
         }
 
         System.out.println(answer);
