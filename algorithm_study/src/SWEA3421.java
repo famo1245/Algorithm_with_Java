@@ -1,5 +1,3 @@
-package unsolved;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,33 +15,41 @@ public class SWEA3421 {
             st = new StringTokenizer(br.readLine());
             int N = Integer.parseInt(st.nextToken());
             int M = Integer.parseInt(st.nextToken());
-            Map<Integer, BitSet> m = new HashMap<>();
+            int[] impossible = new int[N + 1];
+            int[] bits = new int[N + 1];
 
             for (int i = 1; i <= N; i++) {
-                BitSet temp = new BitSet(N);
-                temp.flip(0, N);
-                m.put(i, temp);
+                bits[i] = 1 << (i - 1);
             }
 
             for (int i = 0; i < M; i++) {
                 st = new StringTokenizer(br.readLine());
                 int a = Integer.parseInt(st.nextToken());
                 int b = Integer.parseInt(st.nextToken());
+                impossible[a] |= bits[b];
+            }
 
-                if (a > b) {
-                    int temp = a;
-                    a = b;
-                    b = temp;
+            int answer = 0;
+            int ingredients = 1 << N;
+            for (int select = 0; select < ingredients; select++) {
+                boolean isPossible = true;
+                for (int i = 1; i <= N; i++) {
+                    if (impossible[i] != 0) {
+                        if ((select & bits[i]) != 0 && (select & impossible[i]) != 0) {
+                            isPossible = false;
+                            break;
+                        }
+                    }
                 }
 
-                m.get(a).clear(b);
+                if (isPossible) {
+                    answer++;
+                }
             }
 
-            int count = 1;
-            for (int i = 1; i <= N; i++) {
-                BitSet temp = m.get(i);
-
-            }
+            sb.append(answer).append("\n");
         }
+
+        System.out.print(sb);
     }
 }
