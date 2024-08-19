@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class SWEA5215V4 {
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
@@ -17,39 +18,41 @@ public class SWEA5215V4 {
             int N = Integer.parseInt(st.nextToken());
             int L = Integer.parseInt(st.nextToken());
 
-            int[] tastes = new int[N + 1];
-            int[] calories = new int[N + 1];
-            int[] bits = new int[N + 1];
+            int[] tastes = new int[N];
+            int[] calories = new int[N];
 
-            for (int i = 1; i <= N; i++) {
+            for (int i = 0; i < N; i++) {
                 st = new StringTokenizer(br.readLine());
                 tastes[i] = Integer.parseInt(st.nextToken());
                 calories[i] = Integer.parseInt(st.nextToken());
-                bits[i] = 1 << (i - 1);
             }
 
             int answer = Integer.MIN_VALUE;
-            int combination = 1 << N;
-            for (int select = 0; select < combination; select++) {
-                int maxTaste = 0;
-                int sumCalories = 0;
-                boolean isPossible = true;
-
-                for (int i = 1; i <= N; i++) {
-                    if ((select & bits[i]) > 0) {
-                        maxTaste += tastes[i];
-                        sumCalories += calories[i];
+            for (int i = 1; i <= N; i++) {
+                int[] indexes = new int[N];
+                for (int j = N - 1; j >= N - i; j--) {
+                    indexes[j] = 1;
+                }
+                do {
+                    boolean isPossible = true;
+                    int sumCalories = 0;
+                    int sumTaste = 0;
+                    for (int j = 0; j < N; j++) {
+                        if (indexes[j] == 1) {
+                            sumTaste += tastes[j];
+                            sumCalories += calories[j];
+                        }
 
                         if (sumCalories > L) {
                             isPossible = false;
                             break;
                         }
                     }
-                }
 
-                if (isPossible) {
-                    answer = Math.max(answer, maxTaste);
-                }
+                    if (isPossible) {
+                        answer = Math.max(answer, sumTaste);
+                    }
+                } while(np(indexes));
             }
 
             sb.append(answer).append("\n");
@@ -59,10 +62,30 @@ public class SWEA5215V4 {
     }
 
     static boolean np(int[] p) {
+        int n = p.length;
+
         int i = n - 1;
         while (i > 0 && p[i - 1] >= p[i]) {
-
+            --i;
         }
+
+        if (i == 0) {
+            return false;
+        }
+
+        int j = n - 1;
+        while (p[i - 1] >= p[j]) {
+            --j;
+        }
+
+        swap(p, i - 1, j);
+
+        int k = n - 1;
+        while (i < k) {
+            swap(p, i++, k--);
+        }
+
+        return true;
     }
 
     static void swap(int[] p, int i, int j) {
