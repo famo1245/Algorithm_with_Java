@@ -23,8 +23,12 @@ public class SWEA4008 {
 
             st = new StringTokenizer(br.readLine());
             int index = 0;
-            for (int i = 0; i < 4; i++) {
-                operators[i] = Integer.parseInt(st.nextToken());
+            for (int i = 1; i <= 4; i++) {
+                int count = Integer.parseInt(st.nextToken());
+                while (count > 0) {
+                    operators[index++] = i;
+                    count--;
+                }
             }
 
             st = new StringTokenizer(br.readLine());
@@ -35,28 +39,26 @@ public class SWEA4008 {
             min = Integer.MAX_VALUE;
             max = Integer.MIN_VALUE;
 
-//            do {
-//                do {
-//                    int result = numbers[0];
-//                    for (int i = 1; i < N; i ++) {
-//                        int operand = numbers[i];
-//                        int operator = operators[i - 1];
-//
-//                        if (operator == 1) {
-//                            result += operand;
-//                        } else if (operator == 2) {
-//                            result -= operand;
-//                        } else if (operator == 3) {
-//                            result *= operand;
-//                        } else {
-//                            result /= operand;
-//                        }
-//                    }
-//
-//                    min = Math.min(min, result);
-//                    max = Math.max(max, result);
-//                } while (nextPermutations(operators));
-//            } while(nextPermutations(numbers));
+            do {
+                int result = numbers[0];
+                for (int i = 1; i < N; i++) {
+                    int operand = numbers[i];
+                    int operator = operators[i - 1];
+
+                    if (operator == 1) {
+                        result += operand;
+                    } else if (operator == 2) {
+                        result -= operand;
+                    } else if (operator == 3) {
+                        result *= operand;
+                    } else {
+                        result /= operand;
+                    }
+                }
+
+                min = Math.min(min, result);
+                max = Math.max(max, result);
+            } while (nextPermutations(operators));
 
             sb.append(max - min).append("\n");
         }
@@ -64,45 +66,6 @@ public class SWEA4008 {
         System.out.println(sb);
     }
 
-    static void getResults(int count, int index) {
-        if (count == N) {
-            int result = numbers[0];
-            for (int i = 1; i < N; i++) {
-                int operand = numbers[i];
-                int operator = operators[i - 1];
-
-                if (operator == 1) {
-                    result += operand;
-                } else if (operator == 2) {
-                    result -= operand;
-                } else if (operator == 3) {
-                    result *= operand;
-                } else {
-                    result /= operand;
-                }
-            }
-
-            min = Math.min(min, result);
-            max = Math.max(max, result);
-            return;
-        }
-
-        for (int i = 0; i < N; i++) {
-            if (i >= N - 1) {
-                if (selectedNum[i]) {
-                    continue;
-                }
-
-                selectedNum[i] = true;
-                getResults(count + 1, i + 1);
-                selectedNum[i] = false;
-            } else {
-                if (se)
-            }
-        }
-    }
-
-    // TLE
     static boolean nextPermutations(int[] p) {
         int n = p.length;
 
