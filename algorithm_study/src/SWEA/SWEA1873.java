@@ -71,39 +71,39 @@ public class SWEA1873 {
     }
 
     static void shoot() {
-        int offset;
+        int offsetRow = 0;
+        int offsetCol = 0;
         if (tankDirection == UP || tankDirection == DOWN) {
             if (tankDirection == UP) {
-                offset = -1;
+                offsetRow = -1;
             } else {
-                offset = 1;
-            }
-
-            for (int i = 1; tankRow + offset * i < H && tankRow + offset * i >= 0; i++) {
-                int nextRow = tankRow + offset * i;
-                if (map[nextRow][tankCol] == BRICK || map[nextRow][tankCol] == STEEL) {
-                    if (map[nextRow][tankCol] == BRICK) {
-                        map[nextRow][tankCol] = PLAIN;
-                    }
-                    break;
-                }
+                offsetRow = 1;
             }
         } else {
             if (tankDirection == LEFT) {
-                offset = -1;
+                offsetCol = -1;
             } else {
-                offset = 1;
+                offsetCol = 1;
+            }
+        }
+
+        int i = 1;
+        while (true) {
+            if (tankCol + offsetCol * i >= W || tankCol + offsetCol * i < 0 ||
+                    tankRow + offsetRow * i >= H || tankRow + offsetRow * i < 0) {
+                break;
             }
 
-            for (int i = 1; tankCol + offset * i < W && tankCol + offset * i >= 0; i++) {
-                int nextCol = tankCol + offset * i;
-                if (map[tankRow][nextCol] == BRICK || map[tankRow][nextCol] == STEEL) {
-                    if (map[tankRow][nextCol] == BRICK) {
-                        map[tankRow][nextCol] = PLAIN;
-                    }
-                    break;
+            int nextRow = tankRow + offsetRow * i;
+            int nextCol = tankCol + offsetCol * i;
+            if (map[nextRow][nextCol] == BRICK || map[nextRow][nextCol] == STEEL) {
+                if (map[nextRow][nextCol] == BRICK) {
+                    map[nextRow][nextCol] = PLAIN;
                 }
+                break;
             }
+
+            i++;
         }
     }
 
