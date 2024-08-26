@@ -1,12 +1,14 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.util.StringTokenizer;
 
 public class BOJ31476 {
 
-    static int D, U, T, height;
+    static int D, U, T, height, twin, pony;
     static boolean[] tree;
+    static boolean isEnd;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -24,8 +26,8 @@ public class BOJ31476 {
             tree[Integer.parseInt(input[1])] = false;
         }
 
-        int twin = getTwinTime(1);
-        int pony = getPonyTime(1);
+        getTwinTime();
+        getPonyTime(1, 0);
 
         if (twin == pony) {
             System.out.println(":blob_twintail_thinking:");
@@ -36,27 +38,45 @@ public class BOJ31476 {
         }
     }
 
-    static int getTwinTime(int idx) {
-//        if (idx == height) {
-//            return
-//        }
+    static int getTwinTime() {
+        boolean[] visited = new boolean[height + 1];
+        ArrayDeque<int[]> que = new ArrayDeque<>();
+
+        que.add(new int[] { 1, 0 });
+        while (!que.isEmpty()) {
+            int[] now = que.poll();
+            int node = now[0];
+            int depth = now[1];
+
+            if (depth == D) {
+                break;
+            }
+
+            if (tree[node * 2] && tree[node * 2 + 1]) {
+                // T 추가
+            } else if (tree[node * 2]) {
+
+            } else if (tree[node * 2 + 1]) {
+
+            }
+        }
+
         return 1;
     }
 
-    static int getPonyTime(int idx) {
-        if (idx == height) {
-            return U;
+    static void getPonyTime(int idx, int depth) {
+        if (depth == D || idx == height + 1) {
+            return;
         }
 
-        int time = 0;
         if (tree[idx * 2]) {
-            time += U + getPonyTime(idx * 2);
+            pony += U;
+            getPonyTime(idx * 2, depth + 1);
         }
 
         if (tree[idx * 2 + 1]) {
-            time += U + getPonyTime(idx * 2);
+            pony += U;
+            getPonyTime(idx * 2 + 1, depth + 1);
         }
-
-        return U + time;
     }
 }
