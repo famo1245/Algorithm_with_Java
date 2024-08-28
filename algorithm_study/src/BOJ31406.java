@@ -2,95 +2,105 @@ import java.io.*;
 import java.util.*;
 
 public class BOJ31406 {
+    static Map<Integer, List<Integer>> sys = new HashMap<>();
+    static List<Integer> visibleFolders = new ArrayList<>();
+    static Set<Integer> openedFolders = new HashSet<>();
+    static int cursor = 0;
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
         StringBuilder sb = new StringBuilder();
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
         int N = Integer.parseInt(st.nextToken());
         int Q = Integer.parseInt(st.nextToken());
 
-        List<Directory>[] sys = new ArrayList[N + 1];
-
-        for (int i = 1; i <= N; i++) {
-            sys[i] = new ArrayList<>();
-        }
-
-        // 초기화
         for (int i = 1; i <= N; i++) {
             st = new StringTokenizer(br.readLine());
             int childCount = Integer.parseInt(st.nextToken());
+            List<Integer> children = new ArrayList<>();
 
             for (int j = 0; j < childCount; j++) {
-                int child = Integer.parseInt(st.nextToken());
-                sys[i].add(new Directory(child, i));
+                children.add(Integer.parseInt(st.nextToken()));
             }
+            sys.put(i, children);
         }
 
-        int currentNode = 1;
-        int currentIndex = 0;
+        // 1은 펼쳐져야함
+        visibleFolders.addAll(sys.get(1));
 
         for (int i = 0; i < Q; i++) {
             st = new StringTokenizer(br.readLine());
             String command = st.nextToken();
-
-            if (command.equals("toggle")) {
-                sys[currentNode].get(currentIndex).toggle();
-            } else if (command.equals("move")) {
-                int count = Integer.parseInt(st.nextToken());
-                if (count > 0) {
-                    for (int j = 0; j < count; j++) {
-                        Directory current = sys[currentNode].get(currentIndex);
-                        if (current.open) {
-                            currentNode = current.directoryNum;
-                            currentIndex = 0;
-                        } else {
-                            if (currentIndex < sys[currentNode].size() - 1) {
-                                currentIndex++;
-                            } else {
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    for (int j = 0; j > count; j--) {
-                        if (currentNode == 1) {
-                            break;  // 루트에서는 더 이상 상위로 이동 불가
-                        }
-                        int parentNode = sys[currentNode].get(0).parent;
-                        currentIndex = getIndexInParent(sys[parentNode], currentNode);
-                        currentNode = parentNode;
-                    }
-                }
-                sb.append(sys[currentNode].get(currentIndex).directoryNum).append('\n');
+            if (command.equals("move")) {
+                int k = Integer.parseInt(st.nextToken());
+                moveCursor(k);
+                sb.append(visibleFolders.get(cursor)).append('\n');
+            } else if (command.equals("toggle")) {
+                toggle(visibleFolders.get(cursor));
             }
         }
 
         System.out.print(sb);
     }
 
-    static int getIndexInParent(List<Directory> parentDir, int childNum) {
-        for (int i = 0; i < parentDir.size(); i++) {
-            if (parentDir.get(i).directoryNum == childNum) {
-                return i;
-            }
-        }
-        return -1;
+    static void moveCursor(int k) {
+        cursor = Math.max(0, Math.min(cursor + k, visibleFolders.size() - 1));
     }
 
-    static class Directory {
-        int directoryNum;
-        int parent;
-        boolean open;
+    static void toggle(int folder) {
+        if (openedFolders.contains(folder)) {
+            close(folder);
+            openedFolders.remove(folder);
+        } else {
+            open(folder);
+            openedFolders.add(folder);
+        }
+    }
 
-        public Directory(int directoryNum, int parent) {
-            this.directoryNum = directoryNum;
-            this.parent = parent;
-            this.open = false;
+    static void close(int folder) {
+        List<Integer> subFolders = getAllSubFolders(folder);
+        visibleFolders.removeAll(subFolders);
+        cursor = Math.min(cursor, visibleFolders.size() - 1);
+    }
+
+    static void open(int folder) {
+        int idx = visibleFolders.indexOf(folder) + 1;
+        List<Integer> subFolders = getNowSubFolders(folder);
+        visibleFolders.addAll(idx, subFolders);
+    }
+
+    static List<Integer> getNowSubFolders(int folder) {
+        List<Integer> result = new ArrayList<>();
+        List<Integer> children = sys.get(folder);
+
+        if (children != null) {
+            for (int child : children) {
+                result.add(child);
+                if (openedFolders.contains(child)) {
+                    result.addAll(getNowSubFolders(child));
+                }
+            }
+        }
+        return result;
+    }
+
+    static List<Integer> getAllSubFolders(int folder) {
+        List<Integer> result = new ArrayList<>();
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(folder);
+
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            List<Integer> children = sys.get(current);
+            if (children != null) {
+                for (int child : children) {
+                    result.add(child);
+                    queue.add(child);
+                }
+            }
         }
 
-        public void toggle() {
-            this.open = !this.open;
-        }
+        return result;
     }
 }
