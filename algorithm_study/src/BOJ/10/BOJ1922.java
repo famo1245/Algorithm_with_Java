@@ -71,7 +71,7 @@ public class BOJ1922 {
         }
 
         if (node1 != node2) {
-            parents[node1] = node2;
+            parents[node2] = node1;
         }
     }
 }
