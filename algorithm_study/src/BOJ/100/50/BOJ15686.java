@@ -3,13 +3,13 @@ import java.util.*;
 
 public class BOJ15686 {
 
-    static final int BLANK = 0;
     static final int HOME = 1;
     static final int CHICKEN = 2;
+	static final int MAX_CHICKEN = 13;
 
-    static List<int[]> homeCord, chickenCord;
+	static int[][] chickenCoord, homeCoord;
     static ArrayDeque<Integer> que;
-    static int N, M, minChickenDistance;
+    static int N, M, minChickenDistance, chickenSize, homeSize;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -18,17 +18,19 @@ public class BOJ15686 {
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
         que = new ArrayDeque<>();
-        homeCord = new ArrayList<>();
-        chickenCord = new ArrayList<>();
+		homeCoord = new int[2 * N + 1][];
+		chickenCoord = new int[MAX_CHICKEN][];
+		chickenSize = 0;
+		homeSize = 0;
 
         for(int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < N; j++) {
                 int element = Integer.parseInt(st.nextToken());
                 if (element == CHICKEN) {
-                    chickenCord.add(new int[] {i, j});
+					chickenCoord[chickenSize++] = new int[] {i, j};
                 } else if (element == HOME) {
-                    homeCord.add(new int[] {i, j});
+					homeCoord[homeSize++] = new int[] {i, j};
                 }
             }
         }
@@ -38,20 +40,21 @@ public class BOJ15686 {
         System.out.println(minChickenDistance);
     }
 
-    static void findMinDistance(int row, int col) {
-        if (row > chickenCord.size()) {
+    static void findMinDistance(int index, int count) {
+        if (index > chickenSize) {
             return;
         }
 
-        if (col == M) {
+        if (count == M) {
             int result = 0;
-            for (int[] cord : homeCord) {
+            for (int i = 0; i < homeSize; i++) {
                 int distance = Integer.MAX_VALUE;
-                int rowHome = cord[0];
-                int colHome = cord[1];
+                int[] coord = homeCoord[i];
+                int rowHome = coord[0];
+                int colHome = coord[1];
 
-                for (int index : que) {
-                    int[] chicken = chickenCord.get(index);
+                for (int idx : que) {
+                    int[] chicken = chickenCoord[idx];
                     int rowChicken = chicken[0];
                     int colChicken = chicken[1];
                     distance = Math.min(distance,
@@ -64,9 +67,9 @@ public class BOJ15686 {
             return;
         }
 
-        que.push(row);
-        findMinDistance(row + 1, col + 1);
+        que.push(index);
+        findMinDistance(index + 1, count + 1);
         que.pop();
-        findMinDistance(row + 1, col);
+        findMinDistance(index + 1, count);
     }
 }
