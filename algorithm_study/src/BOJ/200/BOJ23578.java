@@ -22,13 +22,6 @@ public class BOJ23578 {
             Node a = q1.poll();
             Node b = q2.poll();
 
-            a.edgeCount++;
-            b.edgeCount++;
-
-            a.anger = a.expectedAnger == 0 ? (long) a.edgeCount * a.edgeCount * a.studentCount : a.expectedAnger;
-            b.anger = b.expectedAnger == 0 ? (long) b.edgeCount * b.edgeCount * b.studentCount : b.expectedAnger;
-            a.expectedAnger = (long) (a.edgeCount + 1) * (a.edgeCount + 1) * a.studentCount;
-            b.expectedAnger = (long) (b.edgeCount + 1) * (b.edgeCount + 1) * b.studentCount;
             a.calcDiff();
             b.calcDiff();
 
@@ -47,7 +40,6 @@ public class BOJ23578 {
 
         long answer = 0;
         for (Node now : pq.poll()) {
-//            answer += (long) now.edgeCount * now.edgeCount * now.studentCount;
             answer += now.anger;
         }
 
@@ -70,6 +62,7 @@ public class BOJ23578 {
         public Node(int studentCount) {
             this.studentCount = studentCount;
             this.diff = studentCount;
+            this.expectedAnger = (long) (this.edgeCount + 1) * (this.edgeCount + 1) * this.studentCount;
         }
 
         @Override
@@ -78,6 +71,9 @@ public class BOJ23578 {
         }
 
         public void calcDiff() {
+            this.edgeCount++;
+            this.anger = this.expectedAnger;
+            this.expectedAnger = (long) (this.edgeCount + 1) * (this.edgeCount + 1) * this.studentCount;
             this.diff = this.expectedAnger - this.anger;
         }
     }
