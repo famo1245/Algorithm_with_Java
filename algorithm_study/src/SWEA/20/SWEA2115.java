@@ -28,16 +28,16 @@ public class SWEA2115 {
             ArrayList<Profit> profits = new ArrayList<>();
             for (int i = 0; i < N; i++) {
                 for (int j = 0; j < N - M + 1; j++) {
-                    int bag = 0;
                     int profit = 0;
-                    int sum = 0;
-                    for (int k = 0; k < (1 << M); k++) {
-                        for (int offset = 1; offset < M; offset++) {
-                            if ((offset & k) == 0) {
+                    for (int k = 1; k <= (1 << M); k++) {
+                        int bag = 0;
+                        int sum = 0;
+                        for (int offset = 0; offset < M; offset++) {
+                            if ((k & (1 << offset)) == 0) {
                                 continue;
                             }
 
-                            int honey = pots[i][j + offset - 1];
+                            int honey = pots[i][j + offset];
                             if (bag + honey > C) {
                                 break;
                             }
@@ -45,45 +45,23 @@ public class SWEA2115 {
                             bag += honey;
                             sum += honey * honey;
                         }
-//                        System.out.print(sum + " ");
                         profit = Math.max(profit, sum);
                     }
-//                    System.out.println();
-//                    
-//                    for (int k = j; k < j + M; k++) {
-//                        if (bag + pots[i][k] > C) {
-//                            profit = Math.max(profit, sum);
-//                            bag = 0;
-//                            sum = 0;
-//                        }
-//                        
-//                        bag += pots[i][k];
-//                        sum += pots[i][k] * pots[i][k];
-////                        System.out.print(sum + " ");
-//                    }
-//                    
-//                    profit = Math.max(profit, sum);
-                    System.out.print(profit + " ");
+
                     profits.add(new Profit(i, j, j + M - 1, profit));
                 }
-                System.out.println();
             }
 
             PriorityQueue<Profit> pq = new PriorityQueue<>(profits);
             Profit profit1 = pq.poll();
             Profit profit2 = pq.poll();
-            System.out.println(profit2);
             while (!pq.isEmpty()) {
                 if (!isDuplicated(profit1, profit2)) {
-                    System.out.println("==============");
-                    System.out.println(profit1);
-                    System.out.println(profit2);
                     sb.append(profit1.profit + profit2.profit).append('\n');
                     break;
                 }
 
                 profit2 = pq.poll();
-                System.out.println(profit2);
             }
         }
 
@@ -116,12 +94,5 @@ public class SWEA2115 {
             }
             return o.profit - this.profit;
         }
-
-        @Override
-        public String toString() {
-            return "Profit [startRow=" + startRow + ", startCol=" + startCol + ", endCol=" + endCol + ", profit="
-                    + profit + "]";
-        }
-
     }
 }
