@@ -15,7 +15,15 @@ public class BOJ2211 {
             network[i] = new ArrayList<>();
         }
 
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int weight = Integer.parseInt(st.nextToken());
 
+            network[a].add(new Computer(b, weight));
+            network[b].add(new Computer(a, weight));
+        }
     }
 
     static class Computer {
