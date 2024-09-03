@@ -20,7 +20,7 @@ public class SWEA2117 {
 
             N = Integer.parseInt(st.nextToken());
             M = Integer.parseInt(st.nextToken());
-            K = N + 2;
+//            K = N + 2;
             map = new int[N][N];
             houses = new int[N * N][2];
 
@@ -39,6 +39,16 @@ public class SWEA2117 {
                 }
             }
 
+            K = 1;
+            int earn = houseSize * M;
+            while (true) {
+                if ((K * K + (K - 1) * (K - 1)) > earn) {
+                    K--;
+                    break;
+                }
+                K++;
+            }
+
             answer = 0;
             calcValue();
             sb.append(answer).append('\n');
@@ -48,8 +58,9 @@ public class SWEA2117 {
     }
 
     static void calcValue() {
-        while (K > 0) {
-            int pay = K * K + (K - 1) * (K - 1);
+        int k = K;
+        while (k > 0) {
+            int pay = k * k + (k - 1) * (k - 1);
             for (int i = 0; i < N; i++) {
                 for (int j = 0; j < N; j++) {
                     int count = 0;
@@ -57,7 +68,7 @@ public class SWEA2117 {
                         int row = houses[index][0];
                         int col = houses[index][1];
 
-                        if (Math.abs(row - i) + Math.abs(col - j) < K) {
+                        if (Math.abs(row - i) + Math.abs(col - j) < k) {
                             count++;
                         }
                     }
@@ -67,7 +78,7 @@ public class SWEA2117 {
                     }
                 }
             }
-            K--;
+            k--;
         }
     }
 }
