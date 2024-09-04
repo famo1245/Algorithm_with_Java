@@ -1,45 +1,30 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.io.*;
 
 public class BOJ1463 {
-
-    static int N, M;
-    static int[] result;
-    static boolean[] visited;
-    static StringBuilder sb = new StringBuilder();
-
     public static void main(String[] args) throws IOException {
+        final int MAX = 1000001;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+        int[] D = new int[MAX];
+        D[2] = 1;
+        D[3] = 1;
 
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-
-        result = new int[M];
-        visited = new boolean[N + 1];
-
-        getResult(0);
-        System.out.print(sb);
-    }
-
-    static void getResult(int depth) {
-        if (depth == M) {
-            for (int i = 0; i < M; i++) {
-                sb.append(result[i]).append(' ');
+        for (int i = 4; i < MAX; i++) {
+            int case1, case2, case3;
+            case1 = case2 = case3 = Integer.MAX_VALUE;
+            // 1 뺴기
+            case1 = D[i - 1];
+            // 2나누기
+            if (i % 2 == 0) {
+                case2 = D[i / 2];
             }
-            sb.append('\n');
-            return;
-        }
-
-        for (int i = 1; i <= N; i++) {
-            if (!visited[i]) {
-                visited[i] = true;
-                result[depth] = i;
-                getResult(depth + 1);
-                visited[i] = false;
+            // 3 나누기
+            if (i % 3 == 0) {
+                case3 = D[i / 3];
             }
+
+            D[i] = Math.min(Math.min(case1, case2), case3) + 1;
         }
+        int N = Integer.parseInt(br.readLine());
+        System.out.println(D[N]);
     }
 }
