@@ -2,6 +2,12 @@ import java.io.*;
 import java.util.*;
 
 public class BOJ9370 {
+
+    static boolean[] visited;
+    static List<Road>[] G;
+    static int[] distance, distanceVia, query;
+    static int n, via;
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
@@ -10,15 +16,18 @@ public class BOJ9370 {
         int T = Integer.parseInt(br.readLine());
         for (int tc = 1; tc <= T; tc++) {
             st = new StringTokenizer(br.readLine());
-            int n = Integer.parseInt(st.nextToken());
+            n = Integer.parseInt(st.nextToken());
             int m = Integer.parseInt(st.nextToken());
             int t = Integer.parseInt(st.nextToken());
-            List<Road>[] G = new ArrayList[n + 1];
-            int[] distance = new int[n + 1];
+            G = new ArrayList[n + 1];
+            distance = new int[n + 1];
+            distanceVia = new int[n + 1];
+            visited = new boolean[n + 1];
 
             for (int i = 1; i <= n; i++) {
                 G[i] = new ArrayList<>();
                 distance[i] = Integer.MAX_VALUE;
+                distanceVia[i] = Integer.MAX_VALUE;
             }
 
             st = new StringTokenizer(br.readLine());
@@ -36,42 +45,83 @@ public class BOJ9370 {
                 G[b].add(new Road(a, d));
             }
 
-            List<Integer> query = new ArrayList<>();
+            query = new int[t];
             for (int i = 0; i < t; i++) {
-                int x = Integer.parseInt(br.readLine());
-                query.add(x);
+                query[i] = Integer.parseInt(br.readLine());
             }
 
-            PriorityQueue<Road> pq = new PriorityQueue<>();
-            pq.add(new Road(s, 0));
-            distance[s] = 0;
-            while (!pq.isEmpty()) {
-                Road now = pq.poll();
+            int result = dijkstra(s, g, h);
 
-                if (distance[now.to] < now.distance) {
-                    continue;
-                }
-
-                for (Road next : G[now.to]) {
-                    if (distance[next.to] > distance[now.to] + now.distance) {
-                        distance[next.to] = distance[now.to] + now.distance;
-                        pq.add(new Road(next.to, distance[next.to]));
-
-                        if (query.contains(next.to) && query.contains(now.to)) {
-                            query.remove((Integer) next.to);
-                        }
-                    }
+            Road next = null;
+            for (int i = 0; i < G[result].size(); i++) {
+                next = G[result].get(i);
+                if (next.to == h || next.to == g) {
+                    via = next.to;
+                    break;
                 }
             }
 
-            Collections.sort(query);
-            for (int num : query) {
-                sb.append(num).append(' ');
-            }
+
             sb.append('\n');
         }
 
         System.out.print(sb);
+    }
+
+    static int dijkstra(int start, int end1, int end2) {
+        PriorityQueue<Road> pq = new PriorityQueue<>();
+        distance[start] = 0;
+        int result = -1;
+        pq.add(new Road(start, 0));
+
+        while (!pq.isEmpty()) {
+            Road now = pq.poll();
+
+            if (result == -1 && now.to == end1 || now.to == end2) {
+                result = now.to;
+            }
+
+            if (visited[start]) {
+                continue;
+            }
+
+            visited[now.to] = true;
+
+            for (Road next : G[now.to]) {
+                if (!visited[next.to] && distance[next.to] > distance[now.to] + now.distance) {
+                    distance[next.to] = distance[now.to] + now.distance;
+                    pq.add(new Road(next.to, distance[next.to]));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    static void findDestination(int start, int end) {
+        PriorityQueue<Road> pq = new PriorityQueue<>();
+        distanceVia[start] = 0;
+        pq.add(new Road(start, 0));
+
+        while (!pq.isEmpty()) {
+            Road now = pq.poll();
+            if (now.to == end) {
+                return;
+            }
+
+            if (visited[start]) {
+                continue;
+            }
+
+            visited[now.to] = true;
+
+            for (Road next : G[now.to]) {
+                if (!visited[next.to] && distance[next.to] > distance[now.to] + now.distance) {
+                    distance[next.to] = distance[now.to] + now.distance;
+                    pq.add(new Road(next.to, distance[next.to]));
+                }
+            }
+        }
     }
 
     static class Road implements Comparable<Road> {
