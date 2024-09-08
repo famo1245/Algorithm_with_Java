@@ -30,7 +30,15 @@ public class SWEA7465 {
                 union(a, b);
             }
 
+            Set<Integer> groupNum = new HashSet<>();
+            for (int i = 1; i <= N; i++) {
+                groupNum.add(find(i));
+            }
+
+            sb.append(groupNum.size()).append('\n');
         }
+
+        System.out.print(sb);
     }
 
     static int find(int x) {
