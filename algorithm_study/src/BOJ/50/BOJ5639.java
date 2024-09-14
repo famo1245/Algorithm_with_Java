@@ -3,51 +3,47 @@ import java.io.*;
 public class BOJ5639 {
 
     static StringBuilder sb = new StringBuilder();
-    static Node current;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String input = br.readLine();
         Node root = new Node(Integer.parseInt(input));
-        current = root;
+        Node current = root;
 
         while ((input = br.readLine()) != null) {
             Node node = new Node(Integer.parseInt(input));
-            add(node);
+            add(current, node);
+            current = node;
         }
 
         postOrder(root);
         System.out.print(sb);
     }
 
-    static void add(Node node) {
-        System.out.println(current.key + " " + node.key);
+    static void add(Node current, Node node) {
         if (current.key > node.key) {
             if (current.left == null) {
                 current.left = node;
-                node.parent = current;
-                current = node;
-            } else {
-                current = current.left;
-                add(node);
-            }
-        } else {
-            if (current.parent != null && current.parent.key < node.key) {
-                current = current.parent;
-                add(node);
+                node.smallestParent = current;
                 return;
             }
 
-            if (current.right == null) {
-                current.right = node;
-                node.parent = current;
-                current = node;
-            } else {
-                System.out.println("right: " + current.key + " " + current.right.key);
-                current = current.right;
-                add(node);
-            }
+            add(current.left, node);
+            return;
         }
+
+        if (current.smallestParent != null && current.smallestParent.key < node.key) {
+            add(current.smallestParent, node);
+            return;
+        }
+
+        if (current.right == null) {
+            current.right = node;
+            node.smallestParent = current.smallestParent;
+            return;
+        }
+
+        add(current.right, node);
     }
 
     static void postOrder(Node node) {
@@ -66,13 +62,13 @@ public class BOJ5639 {
         int key;
         Node left;
         Node right;
-        Node parent;
+        Node smallestParent;
 
         public Node(int key) {
             this.key = key;
             this.left = null;
             this.right = null;
-            this.parent = null;
+            this.smallestParent = null;
         }
     }
 }
