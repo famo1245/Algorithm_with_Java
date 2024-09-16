@@ -3,9 +3,8 @@ import java.io.*;
 
 public class BOJ31476 {
 
-    static int D, U, T, height, twin, pony, lastNode;
+    static int D, U, T, height, pony, twin, nodeCount;
     static boolean[] tree;
-    static boolean isEnd;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -15,20 +14,21 @@ public class BOJ31476 {
         int N = Integer.parseInt(st.nextToken());
         U = Integer.parseInt(st.nextToken());
         T = Integer.parseInt(st.nextToken());
-        height = (int) Math.pow(2, D) - 1;
-        tree = new boolean[height + 1];
-        Arrays.fill(tree, true);
+        height = (int) Math.pow(2, D);
+        tree = new boolean[height];
 
         for (int i = 0; i < N; i++) {
-            String[] input = br.readLine().split(" ");
-            tree[Integer.parseInt(input[1])] = false;
+            st = new StringTokenizer(br.readLine());
+            st.nextToken();
+            int to = Integer.parseInt(st.nextToken());
+
+            tree[to] = true;
         }
 
         twin = 0;
         pony = 0;
         getTwinTime();
         getPonyTime(1, 1);
-        System.out.println(twin + " " + pony);
 
         if (twin == pony) {
             System.out.print(":blob_twintail_thinking:");
@@ -40,57 +40,53 @@ public class BOJ31476 {
     }
 
     static void getTwinTime() {
-        ArrayDeque<int[]> que = new ArrayDeque<>();
+        Queue<int[]> q = new ArrayDeque<>();
+        // node, depth, separate count, time
+        q.add(new int[] {1, 1, 0, 0});
 
-        que.add(new int[]{1, 1, U, 0});
-        lastNode = 1;
-
-        while (!que.isEmpty()) {
-            int[] now = que.poll();
+        while (!q.isEmpty()) {
+            int[] now = q.poll();
             int node = now[0];
             int depth = now[1];
-            int time = now[2];
-            int sum = now[3];
+            int separate = now[2];
+            int time = now[3];
 
-            lastNode = Math.max(lastNode, node);
-            twin = Math.max(twin, sum);
+            twin = Math.max(twin, time);
+            nodeCount++;
+            if (depth == D) {
+                continue;
+            }
 
-            if (depth < D) {
-                if (tree[node * 2] && tree[node * 2 + 1]) {
-                    que.add(new int[]{node * 2, depth + 1, time + T, sum + time + T});
-                    que.add(new int[]{node * 2 + 1, depth + 1, time +  T, sum + time + T});
-                } else if (tree[node * 2]) {
-                    que.add(new int[]{node * 2, depth + 1, time, sum + time});
-                } else if (tree[node * 2 + 1]) {
-                    que.add(new int[]{node * 2 + 1, depth + 1, time, sum + time});
-                }
+            if (!tree[node * 2] && !tree[node * 2 + 1]) {
+                q.add(new int[] {node * 2, depth + 1, separate + 1, time + U + (T * (separate + 1))});
+                q.add(new int[] {node * 2 + 1, depth + 1, separate + 1, time + U + (T * (separate + 1))});
+            } else if (!tree[node * 2] && tree[node * 2 + 1]) {
+                q.add(new int[] {node * 2, depth + 1, separate, time + U + (T * separate)});
+            } else if (tree[node * 2] && !tree[node * 2 + 1]) {
+                q.add(new int[] {node * 2 + 1, depth + 1, separate, time + U + (T * separate)});
             }
         }
     }
 
-    static void getPonyTime(int idx, int depth) {
-        if (idx == lastNode) {
-            isEnd = true;
+    static void getPonyTime(int node, int depth) {
+        nodeCount--;
+        if (depth == D) {
             return;
         }
 
-        if (depth < D) {
-            if (tree[idx * 2]) {
+        if (!tree[node * 2]) {
+            pony += U;
+            getPonyTime(node * 2, depth + 1);
+            if (nodeCount > 0) {
                 pony += U;
-                getPonyTime(idx * 2, depth + 1);
-
-                if (!isEnd) {
-                    pony += U;
-                }
             }
+        }
 
-            if (tree[idx * 2 + 1]) {
+        if (!tree[node * 2 + 1]) {
+            pony += U;
+            getPonyTime(node * 2 + 1, depth + 1);
+            if (nodeCount > 0) {
                 pony += U;
-                getPonyTime(idx * 2 + 1, depth + 1);
-
-                if (!isEnd) {
-                    pony += U;
-                }
             }
         }
     }
