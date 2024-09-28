@@ -14,6 +14,7 @@ public class BOJ14428 {
         int firstIndex = (int) Math.pow(2, height);
         int size = firstIndex * 2;
         int[] tree = new int[size];
+        indexTable[0] = Integer.MAX_VALUE;
 
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
@@ -31,7 +32,7 @@ public class BOJ14428 {
             } else if (indexTable[leftIndex] > indexTable[rightIndex]) {
                 tree[parent] = rightIndex;
             } else {
-                tree[parent] = Math.min(indexTable[leftIndex], indexTable[rightIndex]);
+                tree[parent] = Math.min(leftIndex, rightIndex);
             }
 
             parent--;
@@ -51,16 +52,24 @@ public class BOJ14428 {
             } else {
                 int start = Integer.parseInt(st.nextToken()) + firstIndex - 1;
                 int end = Integer.parseInt(st.nextToken()) + firstIndex - 1;
-                int result = Integer.MAX_VALUE;
+                int result = 0;
 
                 while (start <= end) {
                     if (start % 2 == 1) {
-                        result = Math.min(result, tree[start]);
+                        if (indexTable[result] > indexTable[tree[start]]) {
+                            result = tree[start];
+                        } else if (indexTable[result] == indexTable[tree[start]]) {
+                            result = Math.min(result, tree[start]);
+                        }
                         start++;
                     }
 
                     if (end % 2 == 0) {
-                        result = Math.min(result, tree[end]);
+                        if (indexTable[result] > indexTable[tree[end]]) {
+                            result = tree[end];
+                        } else if (indexTable[result] == indexTable[tree[end]]) {
+                            result = Math.min(result, tree[end]);
+                        }
                         end--;
                     }
 
@@ -80,14 +89,14 @@ public class BOJ14428 {
             return;
         }
 
-        int leftIndex = index * 2;
-        int rightIndex = index * 2 + 1;
-        if (indexTable[tree[leftIndex]] < indexTable[tree[rightIndex]]) {
+        int leftIndex = tree[index * 2];
+        int rightIndex = tree[index * 2 + 1];
+        if (indexTable[leftIndex] < indexTable[rightIndex]) {
             tree[index] = leftIndex;
-        } else if (indexTable[tree[leftIndex]] > indexTable[tree[rightIndex]]) {
+        } else if (indexTable[leftIndex] > indexTable[rightIndex]) {
             tree[index] = rightIndex;
         } else {
-            tree[index] = Math.min(indexTable[leftIndex], indexTable[rightIndex]);
+            tree[index] = Math.min(leftIndex, rightIndex);
         }
 
         update(tree, indexTable, index / 2);
